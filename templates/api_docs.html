@@ -1,0 +1,245 @@
+<!--
+  Jacksonville, FL Café & Wi-Fi — API Documentation
+  ========================================
+  A clean, readable documentation page for the REST API.
+  Styled to look like a real developer docs site.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Docs — Jacksonville, FL Café & Wi-Fi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='docs.css') }}">
+</head>
+<body>
+
+<!-- ── Top navigation ── -->
+<nav>
+    <a href="/" class="nav-logo">☕ Jacksonville, FL Café & Wi-Fi</a>
+    <div class="nav-links">
+        <a href="/">Café Finder</a>
+        <a href="/api/docs" class="active">API Docs</a>
+    </div>
+</nav>
+
+<!-- ── Hero section ── -->
+<div class="hero">
+    <h1>Café & Wi-Fi <span>API</span></h1>
+    <p>A RESTful API serving data on Jacksonville, FL's best cafés for remote working. Query café listings, discover random spots, add new venues, update prices, and report closures.</p>
+    <div class="hero-meta">
+        <span class="badge">Base URL: <code>http://localhost:5001/api</code></span>
+        <span class="badge">Format: JSON</span>
+        <span class="badge">Auth: None (open)</span>
+    </div>
+</div>
+
+<main>
+
+    <!-- ── Quick start ── -->
+    <section>
+        <h2>Quick Start</h2>
+        <p>The API is open and requires no authentication. All responses are in JSON format. To get started, fetch the full list of cafés:</p>
+        <div class="code-block">
+            <div class="code-header">
+                <span class="method get">GET</span>
+                <span class="endpoint">/api/cafes</span>
+            </div>
+            <pre><code>curl http://localhost:5001/api/cafes</code></pre>
+        </div>
+    </section>
+
+    <!-- ── Endpoints ── -->
+    <section>
+        <h2>Endpoints</h2>
+
+        <!-- GET /api/cafes -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method get">GET</span>
+                <code>/api/cafes</code>
+            </div>
+            <p>Returns all cafés, ordered alphabetically. Optionally filter by neighborhood.</p>
+            <h4>Query Parameters</h4>
+            <table>
+                <tr><th>Param</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td><code>location</code></td><td>string</td><td>No</td><td>Filter by neighborhood (case-insensitive). e.g. <code>Shoreditch</code></td></tr>
+            </table>
+            <h4>Example Response</h4>
+            <pre><code>{
+  "cafes": [
+    {
+      "id": 1,
+      "name": "Bold Bean Coffee Roasters",
+      "location": "Riverside",
+      "map_url": "https://maps.app.goo.gl/ZtnJniReoHzEAue59",
+      "img_url": "https://images.squarespace-cdn.com/content/v1/55caa260e4b00d6bdfd6cc35/1440637207232-396KI87D6IP1C5KFAGXM/Bold+Bean+Riverside-0024.jpg?format=1500w",
+      "has_wifi": true,
+      "has_sockets": true,
+      "has_toilet": true,
+      "can_take_calls": true,
+      "seats": "30-40",
+      "coffee_price": "$3.50"
+    }
+  ]
+}</code></pre>
+        </div>
+
+        <!-- GET /api/random -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method get">GET</span>
+                <code>/api/random</code>
+            </div>
+            <p>Returns a single randomly selected café. Perfect for a "Feeling Lucky" feature.</p>
+            <h4>Example Response</h4>
+            <pre><code>{
+  "cafe": {
+    "id": 7,
+    "name": "Solune Coffee",
+    "location": "Riverside",
+    "has_wifi": true,
+    ...
+  }
+}</code></pre>
+        </div>
+
+        <!-- POST /api/add -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method post">POST</span>
+                <code>/api/add</code>
+            </div>
+            <p>Adds a new café to the database. Expects a JSON body.</p>
+            <h4>Request Body (JSON)</h4>
+            <table>
+                <tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td><code>name</code></td><td>string</td><td>Yes</td><td>Café name (must be unique)</td></tr>
+                <tr><td><code>map_url</code></td><td>string</td><td>Yes</td><td>Google Maps URL</td></tr>
+                <tr><td><code>img_url</code></td><td>string</td><td>Yes</td><td>Image URL for the café</td></tr>
+                <tr><td><code>location</code></td><td>string</td><td>Yes</td><td>Neighborhood name</td></tr>
+                <tr><td><code>has_wifi</code></td><td>boolean</td><td>No</td><td>Default: false</td></tr>
+                <tr><td><code>has_sockets</code></td><td>boolean</td><td>No</td><td>Default: false</td></tr>
+                <tr><td><code>has_toilet</code></td><td>boolean</td><td>No</td><td>Default: false</td></tr>
+                <tr><td><code>can_take_calls</code></td><td>boolean</td><td>No</td><td>Default: false</td></tr>
+                <tr><td><code>seats</code></td><td>string</td><td>No</td><td>e.g. "20-30"</td></tr>
+                <tr><td><code>coffee_price</code></td><td>string</td><td>No</td><td>e.g. "$2.80"</td></tr>
+            </table>
+            <h4>Example Request</h4>
+            <pre><code>curl -X POST http://localhost:5001/api/add \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Sago Coffee",
+    "map_url": "https://maps.google.com/...",
+    "img_url": "https://example.com/sago_coffee.jpg",
+    "location": "Jacksonville Beach",
+    "has_wifi": true,
+    "has_sockets": true,
+    "has_toilet": true,
+    "can_take_calls": true,
+    "seats": "10-20",
+    "coffee_price": "$3.50"
+  }'</code></pre>
+            <h4>Success Response <span class="status">201</span></h4>
+            <pre><code>{
+  "response": { "success": "'The Roastery' was added successfully." },
+  "cafe": { ... }
+}</code></pre>
+            <h4>Error Responses</h4>
+            <table>
+                <tr><th>Status</th><th>Reason</th></tr>
+                <tr><td><span class="status error">400</span></td><td>Missing required fields</td></tr>
+                <tr><td><span class="status error">409</span></td><td>Café name already exists</td></tr>
+            </table>
+        </div>
+
+        <!-- PATCH /api/update-price -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method patch">PATCH</span>
+                <code>/api/update-price/&lt;cafe_id&gt;</code>
+            </div>
+            <p>Updates the coffee price for a specific café.</p>
+            <h4>Query Parameters</h4>
+            <table>
+                <tr><th>Param</th><th>Type</th><th>Required</th><th>Description</th></tr>
+                <tr><td><code>new_price</code></td><td>string</td><td>Yes</td><td>The updated price, e.g. <code>$3.00</code></td></tr>
+            </table>
+            <h4>Example</h4>
+            <pre><code>curl -X PATCH "http://localhost:5001/api/update-price/1?new_price=$3.00"</code></pre>
+        </div>
+
+        <!-- DELETE /api/delete -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method delete">DELETE</span>
+                <code>/api/delete/&lt;cafe_id&gt;</code>
+            </div>
+            <p>Removes a café from the database by its ID.</p>
+            <h4>Example</h4>
+            <pre><code>curl -X DELETE http://localhost:5001/api/delete/5</code></pre>
+        </div>
+
+        <!-- DELETE /api/report-closed -->
+        <div class="endpoint-card">
+            <div class="endpoint-header">
+                <span class="method delete">DELETE</span>
+                <code>/api/report-closed/&lt;cafe_id&gt;</code>
+            </div>
+            <p>Reports a café as permanently closed. Semantically different from <code>/api/delete</code> — this represents a user reporting that a real-world venue has shut down.</p>
+            <h4>Example</h4>
+            <pre><code>curl -X DELETE http://localhost:5001/api/report-closed/12</code></pre>
+        </div>
+    </section>
+
+    <!-- ── Error format ── -->
+    <section>
+        <h2>Error Format</h2>
+        <p>All errors follow a consistent structure:</p>
+        <pre><code>{
+  "error": {
+    "Not Found": "No café found with id 99."
+  }
+}</code></pre>
+        <table>
+            <tr><th>Status</th><th>Meaning</th></tr>
+            <tr><td><span class="status">200</span></td><td>Success</td></tr>
+            <tr><td><span class="status">201</span></td><td>Created</td></tr>
+            <tr><td><span class="status error">400</span></td><td>Bad request / missing params</td></tr>
+            <tr><td><span class="status error">404</span></td><td>Resource not found</td></tr>
+            <tr><td><span class="status error">409</span></td><td>Conflict (duplicate)</td></tr>
+        </table>
+    </section>
+
+    <!-- ── Running locally ── -->
+    <section>
+        <h2>Running Locally</h2>
+        <div class="code-block">
+            <pre><code># 1. Clone the repository
+git clone https://github.com/your-username/cafe-wifi.git
+cd cafe-wifi
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run the app
+python app.py
+
+# The app will be available at http://localhost:5001
+# The API at http://localhost:5001/api/cafes
+# These docs at http://localhost:5001/api/docs</code></pre>
+        </div>
+        <p><strong>Note:</strong> The database resets to its original state on every restart, so feel free to experiment with adding, updating, and deleting cafés.</p>
+    </section>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+    <p>Built with Python & Flask by <span>Ghaleb Khadra</span> &middot; {{ current_year }}</p>
+</footer>
+
+</body>
+</html>
