@@ -20,11 +20,13 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Boolean
+from dotenv import load_dotenv
 
-
+load_dotenv()
 # ── App Configuration ──────────────────────────────────────────────────────────
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///cafes.db"
 
 # Path references for the primary DB and the working copy
@@ -268,4 +270,4 @@ def api_report_closed(cafe_id):
 # ── Run ────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=os.getenv("DEBUG") == "1", port=5001)
